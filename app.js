@@ -5,23 +5,24 @@ const server = http.createServer((req, res) => {
   const url = req.url;
   const method = req.method;
   if (url === "/") {
-    let data = fs.readFileSync("message.txt", "utf8");
-    console.log(data);
-    res.write(`
-    <html>
+    return fs.readFile("message.txt", "utf8", (err, data) => {
+      console.log(data);
+      res.write(`
+      <html>
       <head>
-         <title>Enter Message</title>
+      <title>Enter Message</title>
       </head>
       <body>
         <form action="/message" method="POST">
-           ${data}
+        ${data}
            <input type="text" name="message" />
            <button type="sumit">send</button>
-        </form>
-      </body>
-    </html>
-    `);
-    return res.end();
+           </form>
+           </body>
+           </html>
+           `);
+      return res.end();
+    });
   }
 
   if (url === "/message" && method === "POST") {
@@ -34,10 +35,11 @@ const server = http.createServer((req, res) => {
       const parseBody = Buffer.concat(body).toString();
       // console.log(parseBody);
       const message = parseBody.split("=")[1];
-      fs.writeFileSync("message.txt", message);
-      res.statusCode = 302;
-      res.setHeader("Location", "/");
-      return res.end();
+      fs.writeFile("message.txt", message, () => {
+        res.statusCode = 302;
+        res.setHeader("Location", "/");
+        return res.end();
+      });
     });
   }
   res.setHeader("Content-Type", "text/html");
