@@ -1,16 +1,13 @@
-const express = require("express");
-const app = express();
+const app = require("express")();
 const bodyParser = require("body-parser");
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-
+const fs = require("fs");
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(shopRoutes);
-app.use("/admin", adminRoutes);
+const { loginRouter, productRouter } = require("./routes/login");
+const homeRouter = require("./routes/Home");
 
-app.use((req, res, next) => {
-  res.status(404).send("<h1>Page not found!!</h1>");
-});
+app.use(loginRouter);
+app.use(productRouter);
+app.use(homeRouter);
 
-app.listen(3001);
+app.listen(8080);
